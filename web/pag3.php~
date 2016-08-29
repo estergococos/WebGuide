@@ -1,0 +1,19 @@
+<?php
+require("header.php");
+?>
+<div class="jumbotron">
+        <div id="buttonQR" align="center">
+						<input value="Prova" onclick="ir(2)" type="button" class="btn btn-primary btn-lg">
+						<input value="Prova" onclick="ir(3)" type="button" class="btn btn-primary btn-lg">
+			
+				</div>	
+</div>		
+
+		
+
+
+  
+	<?php
+	require("footer.php");
+
+	?>	

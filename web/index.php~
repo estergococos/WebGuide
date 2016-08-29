@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<?php
+
+	function is_session_started(){
+		if ( php_sapi_name() !== 'cli' ) {
+			if ( version_compare(phpversion(), '5.4.0', '>=') ) {
+				return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
+			} 
+			else {
+				return session_id() === '' ? FALSE : TRUE;
+			}
+		}
+		return FALSE;
+	}
+
+	if ( is_session_started() === FALSE ){
+		session_start();
+	}
+?>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>Jumbotron Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../../dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" role="form">
+            <div class="form-group">
+              <input type="text" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+<?php
+				
+		pg_connect("host=localhost port=5432 dbname=asterisk user=albert password=albert34") or die("No se pudo realizar la conexi&oacute;n:".pg_last_error());
+			
+		if($_REQUEST['nombre'] && $_REQUEST['password']){			
+						
+			
+			$res =pg_query("SELECT * FROM sip_users");
+			if (!$res) {
+				die("Error al realizar consulta");
+			}
+			$sortirwhile=0;
+			while (($reg = pg_fetch_row($res)) AND ($sortirwhile==0)) {
+				if (strcmp($_REQUEST['nombre'],$reg[1])==0){
+					$control=0;
+					unset($_REQUEST['nombre']);
+					unset($_REQUEST['password']);
+					$sortirwhile=1;
+				}
+				else 
+					$control=1;
+				
+			}
+			if ($control){			
+				$query = sprintf("INSERT INTO sip_users(name, secret) VALUES('%s','%s')",$_REQUEST['nombre'],$_REQUEST['password']);
+				$query = pg_query($query);
+				 
+	 			if($query){
+					$_SESSION['nombre']=$_REQUEST['nombre'];
+					$_SESSION['password']=$_REQUEST['password'];
+					unset($_REQUEST['nombre']);
+					unset($_REQUEST['password']);
+		?>
+	<div class="jumbotron">		
+		<div class="container" id="buttonenter" align="center">
+			<form action="session.php">
+				<input type="submit" class="btn btn-primary btn-lg" value="HOLA!">
+			</form>
+		</div>
+	</div>
+
+		<?php
+				}
+				else{
+					echo "Ocurri&oacute;o un error ! ".pg_last_error();
+				}
+			}
+		}
+		else{ // Si no tenemos todos los campos, mostramos el formulario
+	?>
+	
+	
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+	<div class="row">
+		<div class="col-md-6">		
+			<div class="container">
+				<h1>Hello, world!</h1>
+				<p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+				
+				<div id="button" align="center">
+					<form method="POST"action="index.php">
+						<input type="text" name="nombre" hidden="hidden" value="<?php for($i=0; $i<10; $i++){ $d=rand(1,30)%2; echo $d ? chr(rand(65,90)) : chr(rand(48,57));}?>">
+						<input type="text" name="password" hidden="hidden" value="1111">
+						<input type="submit" value="Free Trial" class="btn btn-primary btn-lg" role="button">
+					</form>
+				</div>
+			</div>		
+		</div>
+		<div class="col-md-6">
+			<div class="container">
+			
+				<form class="form-signin" role="form" method="POST" action="index.php">
+					<h2 class="form-signin-heading">Login</h2>
+					<input type="nombre" class="form-control" placeholder="Email address" required autofocus>
+					<input type="password" class="form-control" placeholder="Password" required>
+					<br>
+					<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+				</form>
+			</div>
+		</div> 
+	</div>
+</div>
+<?php
+		}
+		
+		$res =pg_query("SELECT * FROM sip_users");
+		if (!$res) {
+			die("Error al realizar consulta");
+		}
+		while ($reg = pg_fetch_row($res)) {
+		}
+	?>
+
+<div class="container"><!-- Example row of columns -->
+	<div class="row">
+		<div class="col-md-4">
+			<h2>Heading</h2>
+			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+		</div>
+		<div class="col-md-4">
+			<h2>Heading</h2>
+			<p><?php
+				
+				echo "Datos: <br>";
+
+				$res =pg_query("SELECT * FROM sip_users");
+				if (!$res) {
+					die("Error al realizar consulta");
+				}
+				while ($reg = pg_fetch_row($res)) {
+					echo "Nombres: <em>{$reg[1]}</em>";
+					echo "<br />\n";
+				}	?></p>
+			<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+		</div>
+	</div>
+
+	<hr>
+	<footer>
+		<p>&copy; Company 2013</p>
+      	</footer>
+</div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<?php
+
+	function is_session_started(){
+		if ( php_sapi_name() !== 'cli' ) {
+			if ( version_compare(phpversion(), '5.4.0', '>=') ) {
+				return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
+			} 
+			else {
+				return session_id() === '' ? FALSE : TRUE;
+			}
+		}
+		return FALSE;
+	}
+
+	if ( is_session_started() === FALSE ){
+		session_start();
+	}
+?>
+<html>
+<head>
+	
+</head>
+<body>
+	<?php
+		echo "Conexion ";		
+		
+		pg_connect("host=localhost port=5432 dbname=asterisk user=albert password=albert34") or die("No se pudo realizar la conexi&oacute;n:".pg_last_error());
+		echo "<em>establecida</em><br>";
+				
+		if($_REQUEST['nombre'] && $_REQUEST['password']){			
+						
+			
+			echo "Insertar <br>";
+			$res =pg_query("SELECT * FROM sip_users");
+			if (!$res) {
+				die("Error al realizar consulta");
+			}
+			$sortirwhile=0;
+			while (($reg = pg_fetch_row($res)) AND ($sortirwhile==0)) {
+				if (strcmp($_REQUEST['nombre'],$reg[1])==0){
+					echo "coinciden nombres <br />\n";
+					$control=0;
+					unset($_REQUEST['nombre']);
+					unset($_REQUEST['password']);
+					$sortirwhile=1;
+				}
+				else 
+					$control=1;
+				
+			}
+			if ($control){			
+				$query = sprintf("INSERT INTO sip_users(name, secret) VALUES('%s','%s')",$_REQUEST['nombre'],$_REQUEST['password']);
+				$query = pg_query($query);
+				 
+	 			if($query){
+	 				echo "El registro ha sido agregado";
+					$_SESSION['nombre']=$_REQUEST['nombre'];
+					$_SESSION['password']=$_REQUEST['password'];
+					unset($_REQUEST['nombre']);
+					unset($_REQUEST['password']);
+		?>
+		<div id="buttonenter" align="center">
+			<form action="web1.php">
+				<input type="submit" style="width:500px; height:250px" value="HOLA!">
+			</form>
+		</div>
+
+
+		<?php
+				}
+				else{
+					echo "Ocurri&oacute;o un error ! ".pg_last_error();
+				}
+			}
+		}
+		else{ // Si no tenemos todos los campos, mostramos el formulario
+	?>
+	<div id="form" align="left">	
+		<form method="POST" action="web.php">
+			Nombre: <input type="text" name="nombre"><br />
+			Password: <input type="text" name="password"><br />
+			<input type="submit">
+		</form>
+	</div>
+	<div id="button" align="center">
+		<form method="POST"action="web.php">
+			<input type="text" name="nombre" hidden="hidden" value="<?php for($i=0; $i<10; $i++){ $d=rand(1,30)%2; echo $d ? chr(rand(65,90)) : chr(rand(48,57));}?>">
+			<input type="text" name="password" hidden="hidden" value="1111">
+			<input type="submit" value="FREE" style="width:500px; height:250px">
+		</form>
+	</div>
+	<?php
+		}
+		echo "Datos: <br>";
+
+		$res =pg_query("SELECT * FROM sip_users");
+		if (!$res) {
+			die("Error al realizar consulta");
+		}
+		while ($reg = pg_fetch_row($res)) {
+			echo "Nombres: <em>{$reg[1]}</em>";
+			echo "<br />\n";
+		}
+	?>	
+	
+</body>
+</html>
